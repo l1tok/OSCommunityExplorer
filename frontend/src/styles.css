@@ -1,0 +1,488 @@
+body {
+  font-family: sans-serif;
+  margin: 0px;
+}
+
+.app {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.actions {
+  position: absolute;
+  top: 2%;
+  left: 10px;
+  color: #ccc;
+}
+
+.actions-header {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.action {
+  margin-left: 2px;
+  font-size: 10pt;
+  /* text-decoration: underline; */
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 搜索容器样式 */
+#search {
+  position: fixed; /* 固定位置，避免随页面滚动 */
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%); /* 居中对齐 */
+  width: 300px;
+  z-index: 30; /* 确保搜索框在上层 */
+}
+
+/* 搜索输入框样式 */
+.search-input {
+  width: 100%;
+  padding: 10px 40px 10px 15px; /* 左侧15px, 右侧40px为图标预留空间 */
+  box-sizing: border-box;
+  border: none; /* 移除默认边框 */
+  border-bottom: 1px solid #cccccc;; /* 底部下划线 */
+  font-size: 16px;
+  outline: none; /* 移除焦点时的轮廓 */
+  background-color: #2c2c2c; /* 输入框背景颜色 */
+  color: #ffffff; /* 输入文本颜色 */
+  transition: border-bottom-color 0.3s ease, background-color 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: #bbbbbb; /* 提示文本颜色 */
+}
+
+/* 添加搜索图标 */
+#search::after {
+  content: "";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23ffffff" viewBox="0 0 24 24"><path d="M10,2A8,8 0 1,1 2,10A8,8 0 0,1 10,2M10,4A6,6 0 1,0 16,10A6,6 0 0,0 10,4Z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none; /* 让点击事件透过图标到输入框 */
+}
+
+/* 候选列表样式 */
+.search-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #2c2c2c; /* 下拉列表背景色 */
+  border: 1px solid #444; /* 边框颜色 */
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 1000; /* 确保下拉列表在最上层 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 候选项样式 */
+.search-list li {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #ffffff; /* 候选项文字颜色 */
+  transition: background-color 0.2s ease;
+}
+
+.search-list li strong {
+  color: #00aced; /* 高亮匹配部分的颜色 */
+}
+
+/* 鼠标悬停和选中项的背景颜色 */
+.search-list li:hover,
+.search-list li.selected {
+  background-color: #505050;
+}
+
+
+/* 更新后的暗色系开关按钮样式 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #555; /* 暗色背景 */
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #bbb; /* 较亮的手柄颜色 */
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #343434; 
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+  background-color: #fff; /* 选中时手柄变为白色 */
+}
+
+/* 布局调整 */
+.action-toggle-labels {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 2px; /* 与其他 action 保持一致的左边距 */
+}
+
+.action-toggle-labels span {
+  margin-left: 2px;
+  font-size: 10pt;
+  color: #ccc;
+  cursor: pointer;
+  user-select: none;
+}
+
+.action-toggle .icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.action-toggle .label {
+  color: #cccccc; /* 文字颜色 */
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 初始状态为 "Pause" 图标 */
+#playPause.paused .icon {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23CCCCCC" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" /></svg>');
+}
+
+/* 暂停状态的图标样式 */
+#playPause .icon {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23CCCCCC" viewBox="0 0 24 24"><rect x="5" y="3" width="6" height="18"/><rect x="13" y="3" width="6" height="18"/></svg>');
+}
+
+
+/* 侧边栏样式 */
+#sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25%;
+  height: 100%;
+  background-color: #222; /* 背景色 */
+  color: #e0e0e0; /* 字体颜色（浅灰色） */
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(0);
+  display: none; /* 默认隐藏 */
+}
+
+#sidebar.visible {
+  display: block;
+}
+
+
+/* 按钮样式 */
+.toggle-btn {
+  position: absolute;
+  top: 50%;
+  left: -40px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background-color: #555;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #333;
+}
+
+.toggle-btn::before {
+  content: '>'; /* 使用字符编码显示箭头 */
+}
+
+#repositoryHeader {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #444;
+}
+
+#repositoryIcon {
+  width: 40px; /* 图标宽度增加 */
+  height: 40px; /* 图标高度增加 */
+  margin-right: 15px;
+  border-radius: 5px; /* 圆角 */
+}
+
+#repositoryName {
+  font-size: 90%; /* 仓库名称字体更大 */
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff; /* 仓库名称颜色设置为白色 */
+}
+
+#repositoryDetails {
+  padding: 15px;
+  font-size: 16px; /* 仓库详细信息字体大小 */
+  color: #ccc; /* 仓库详细信息颜色 */
+}
+
+#repositoryLink {
+  text-decoration: none; /* 去掉下划线 */
+  color: inherit; /* 让文字颜色继承父元素，保持一致 */
+}
+
+#repositoryLink:hover {
+  text-decoration: underline; /* 可选：鼠标悬停时显示下划线 */
+}
+
+
+#activityChart {
+  width: 80%; /* 或者指定具体宽度，如 300px */
+  height: auto; /* 自动适应宽高比 */
+  max-width: 600px; /* 最大宽度限制 */
+  border: 1px solid black; /* 添加边框 */
+}
+
+#activityChart {
+  background-color: #2c2c2c;  /* 设置深色背景 */
+  margin-left: 20px;  /* 左边距 */
+  margin-right: 20px;  /* 右边距 */
+  border: 2px solid #444444;  /* 深色边框 */
+  border-radius: 12px;  /* 圆角 */
+}
+
+.month-selector-container {
+  display: flex;               /* 使用 Flexbox 布局 */
+  justify-content: center;     /* 水平居中对齐 */
+  align-items: center;         /* 垂直居中对齐 */
+  padding-bottom: 1%;
+  font-size: 13px;             /* 设置适中的字体大小 */
+}
+
+/* 月份选择器样式 */
+#month-select {
+  width: 110px;                /* 设置固定宽度，防止过宽 */
+  max-width: 80%;             /* 最大宽度为父容器宽度 */
+  padding: 6px 10px;           /* 内边距让下拉框内容不至于太紧凑 */
+  border-radius: 5px;          /* 圆角 */
+  border: 1px solid #444;      /* 暗色边框 */
+  background-color: #333;      /* 暗色背景 */
+  color: #e0e0e0;              /* 浅灰色文本 */
+  font-size: 13px;             /* 字体大小 */
+  cursor: pointer;            /* 鼠标悬停时显示为手型 */
+  transition: border-color 0.3s, background-color 0.3s; /* 平滑过渡 */
+}
+
+/* 鼠标悬停时 */
+#month-select:hover {
+  border-color: #aaabad;       /* 蓝色边框 */
+  background-color: #444;      /* 深灰背景 */
+}
+
+/* 选中时的样式 */
+#month-select:focus {
+  outline: none;               /* 去掉焦点框 */
+  border-color: #979797;       /* 蓝色边框 */
+  background-color: #444;      /* 深灰背景 */
+}
+
+/* 划分线 */
+.custom-hr {
+  border: 0.2px solid #494949; 
+  width: 98%;
+}
+
+
+/* 表格样式 */
+/* 限制表格高度并隐藏滚动条 */
+.data-table-container {
+  max-height: 27%;            /* 设置表格的最大高度 */
+  overflow-y: scroll;           /* 启用垂直滚动 */
+  scrollbar-width: none;        /* 隐藏滚动条 (Firefox) */
+  -ms-overflow-style: none;     /* 隐藏滚动条 (IE/Edge) */
+}
+
+.data-table-container::-webkit-scrollbar {
+  display: none;                /* 隐藏滚动条 (Chrome, Safari) */
+}
+
+.data-table {
+  width: 95%;
+  margin: 20px auto;            /* 居中表格 */
+  border-collapse: collapse;    /* 表格边框合并 */
+  background-color: transparent; /* 背景透明 */
+  color: #e0e0e0;               /* 浅灰色字体，适合暗色背景 */
+  font-family: Arial, sans-serif; /* 使用清晰易读的字体 */
+  font-size: 13px;              /* 字体大小 */
+}
+
+/* 表头样式 */
+.data-table th {
+  text-align: left;             /* 表头文字左对齐 */
+  padding: 12px;                /* 表头内边距 */
+  font-weight: bold;            /* 表头加粗 */
+  border-bottom: 2px solid #444; /* 表头下方边框 */
+  color: #ffffff;               /* 表头文字为纯白 */
+}
+
+/* 表格数据单元格样式 */
+.data-table td {
+  padding: 12px;                /* 数据单元格内边距 */
+  border-bottom: 1px solid #444; /* 数据行之间的边框 */
+}
+
+/* 隔行变色效果 */
+.data-table tr:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.05); /* 奇数行轻微灰色背景 */
+}
+
+.data-table tr:nth-child(even) {
+  background-color: transparent; /* 偶数行完全透明 */
+}
+
+/* 鼠标悬停效果 */
+.data-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* 鼠标悬停时背景微亮 */
+}
+
+
+
+/* 仓库列表 */
+.repo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  max-width: 95%;
+  height: 23%; /* 设置固定高度 */
+  overflow-y: auto; /* 启用纵向滚动条 */
+  scrollbar-width: none;        /* 隐藏滚动条 (Firefox) */
+  -ms-overflow-style: none;     /* 隐藏滚动条 (IE/Edge) */
+  font-family: Arial, sans-serif; /* 设置字体 */
+}
+
+/* 标题行 */
+.repo-header {
+  font-weight: bold;
+  padding: 8px 12px; /* 减小padding */
+  border-bottom: 1px solid #444; /* 改为细线 */
+  background-color: #333;
+  color: #fff;
+  font-size: 14px; /* 小一点的字体 */
+}
+
+/* 每一项仓库 */
+.repo-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px; /* 减小padding */
+  border-bottom: 1px solid #444;
+  font-size: 14px; /* 小一点的字体 */
+}
+
+.repo-item:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05); /* 隔行变色 */
+}
+
+.repo-item:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.02); /* 隔行变色 */
+}
+
+/* 仓库名称 */
+.repo-name {
+  font-size: 14px; /* 小一点的字体 */
+  color: #e0e0e0;
+}
+
+/* 权重 */
+.repo-comm {
+  font-size: 14px; /* 小一点的字体 */
+  color: #00aaff;
+}
+
+.repo-name a {
+  text-decoration: none; /* 去掉默认的下划线 */
+  color: #e0e0e0; /* 保持和仓库名称相同的颜色 */
+}
+
+.repo-name a:hover {
+  text-decoration: underline; /* 鼠标悬停时显示下划线 */
+  color: #00aaff; /* 鼠标悬停时改变颜色 */
+}
+
+
+/* neighbor下拉选择菜单样式 */
+#analysis-options {
+  padding: 5px; /* 内边距保持一致 */
+  border-radius: 5px; /* 圆角 */
+  border: 1px solid #444;      /* 暗色边框 */
+  background-color: #333;      /* 暗色背景 */
+  color: #ffffff; /* 字体颜色设置为白色 */
+  cursor: pointer; /* 鼠标样式 */
+}
+
+#analysis-options:hover {
+  border-color: #aaabad;       /* 蓝色边框 */
+  background-color: #444;      /* 深灰背景 */
+}
+
+#analysis-options:focus {
+  outline: none;               /* 去掉焦点框 */
+  border-color: #979797;       /* 蓝色边框 */
+  background-color: #444;      /* 深灰背景 */
+}
