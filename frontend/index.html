@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <title>Cosmos 100x100 grid example</title>
+    <meta charset="UTF-8" />
+  </head>
+
+  <body>
+    <div id="search"></div>
+    <div class="app">
+      <div id="labels"></div>
+      <div id="labelsSelected"></div>
+      <div id="labelsHovered"></div>
+      <canvas/>
+      
+    </div>
+
+    <div class="actions">
+      <div class="actions-header">Actions:</div>
+      <div class="action-toggle">
+        <div class="action" id="playPause">
+          <span class="label">Pause</span>
+          <span class="icon"></span>
+          
+        </div>
+      </div>
+      <div class="action" id="fit-view">Fit View</div>
+      <div class="action" id="zoom">Zoom to a point</div>
+      <div class="action" id="select-points-in-area">
+        Select points in a rectangular area
+      </div>
+      <div class="action">
+        <label for="analysis-options">Neighbors:</label>
+        <select id="analysis-options">
+          <option value="1-hop">1-hop</option>
+          <option value="k-core">k-core</option>
+          <option value="k-truss">k-truss</option>
+        </select>
+      </div>
+      <div class="action-toggle-labels">
+        <span>Show labels: </span>
+        <label class="switch">
+          <input type="checkbox" id="toggleLabels" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+
+    </div>
+
+
+    
+      <!-- 侧边栏 -->
+    <div id="sidebar" class="hidden">
+      <div id="toggle-sidebar" class="toggle-btn">
+      </div>
+      <div id="repositoryHeader">
+        <img id="repositoryIcon" src="" alt="Repository Icon">
+        <a id="repositoryLink" href="#" target="_blank" rel="noopener noreferrer">
+          <span id="repositoryName">repo_name</span>
+        </a>
+      </div>
+      <p style="text-align: center;">2024年度OpenRank和活跃度变化</p>
+      <canvas id="activityChart"></canvas>
+
+      <hr class="custom-hr" />
+
+      <p style="text-align: center;">开发者OpenRank榜单</p>
+      <div class="month-selector-container">
+        <label for="month-select">月份:&nbsp;</label>
+        <select id="month-select">
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4">April</option>
+          <option value="5">May</option>
+          <option value="6">June</option>
+          <option value="7">July</option>
+          <option value="8">August</option>
+          <option value="9">September</option>
+          <option value="10">October</option>
+          <option value="11" selected>November</option>
+          <option value="12">December</option>
+        </select>
+      </div>
+      
+      <div class="data-table-container">
+        <table class="data-table" id="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Avatar</th>
+              <th>ID</th>
+              <th>OpenRank</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 动态填充数据 -->
+          </tbody>
+        </table>
+      </div>
+      <hr class="custom-hr" />
+
+      <ul class="repo-list" id="repo-list">
+        <!-- 动态填充列表 -->
+      </ul>
+
+
+    </div>
+   
+    <script src="src/index.ts"></script>
+  </body>
+</html>
