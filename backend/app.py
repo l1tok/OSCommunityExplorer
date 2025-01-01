@@ -17,7 +17,7 @@ client = Client(
     settings={'use_server_time_zone': True},  # 通过 settings 配置时区
     connect_timeout=15,
     send_receive_timeout=60
-) # 将'******'换为自己的信息
+) # 将'******'换为自己的数据库信息
 
 # 初始化无向图
 G = nx.Graph()
