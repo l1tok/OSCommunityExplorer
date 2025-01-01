@@ -12,13 +12,18 @@
 [社区发现算法仓库链接](https://github.com/l1tok/CPGCL)
 
 ## 本地部署
-前端部署
+克隆仓库
 ```bash
 git clone https://github.com/l1tok/OSCommunityExplorer.git
+cd OSCommunityExplorer
+```
+前端部署
+```bash
 cd frontend
 yarn install
 yarn run start
 ```
+
 后端部署
 ```bash
 cd backend
